@@ -1,0 +1,17 @@
+
+
+.root-layout {
+    display: flex;
+    flex-direction: column;
+    --tw-bg-opacity:1;
+    background-color: rgb(255, 248, 241 );
+  }
+  
+  .main-content {
+    min-height: 300px;
+    flex: 1;
+    padding-top: 80px; /* Adjust based on header height */
+    padding-bottom: 40px; /* Adjust based on footer height */
+    overflow-y: auto;
+  }
+  
