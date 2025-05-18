@@ -40,7 +40,7 @@ const Header = () => {
             <option value="Telugu">Telugu</option>
           </select>
           <button className="predict-btn" onClick={() => { toggleMenu(); goToPrediction(); }}>
-            Predict Disease
+            Try Chatbot
           </button>
         </nav>
       )}
@@ -57,7 +57,7 @@ const Header = () => {
           </select>
           
           <button className="predict-btn" onClick={goToPrediction}>
-            Predict Disease
+            Try Chatbot
           </button>
         </nav>
       </div>

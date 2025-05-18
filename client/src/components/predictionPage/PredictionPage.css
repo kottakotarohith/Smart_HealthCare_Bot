@@ -245,6 +245,11 @@ body, html {
   color: #4b5563;
   transition: color 0.2s ease;
 }
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
 
 .input-buttons button:hover {
   color: #111827;
@@ -266,4 +271,110 @@ body, html {
   color: #9ca3af;
   text-align: center;
   padding-top: 4px;
+}
+
+.get-info-button {
+  background-color: #55ad9b;
+  color: white;
+  padding: 8px 16px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.disease-info-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f7f9fa;
+  border-left: 5px solid #55ad9b;
+  border-radius: 8px;
+  white-space: pre-wrap;
+}
+
+.disease-info-display {
+  background: #f7f9fc;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.6;
+}
+
+.disease-info-display h1,
+.disease-info-display h2,
+.disease-info-display h3 {
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #2b4c7e;
+}
+
+.disease-info-display ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.disease-info-display li {
+  margin-bottom: 8px;
+}
+
+.disease-info-display p {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #55ad9b;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.disease-info-display {
+  background-color: #fdfdfd;
+  padding: 25px;
+  margin-top: 25px;
+  border-radius: 12px;
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  color: #222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.disease-info-display h1,
+.disease-info-display h2,
+.disease-info-display h3 {
+  color: #2c3e50;
+  font-weight: bold;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.disease-info-display h1 { font-size: 26px; }
+.disease-info-display h2 { font-size: 22px; }
+.disease-info-display h3 { font-size: 20px; }
+
+.disease-info-display ul {
+  margin-left: 20px;
+  list-style-type: disc;
+}
+
+.disease-info-display li {
+  margin-bottom: 8px;
+  font-size: 16px;
 }

@@ -1,309 +1,12 @@
-// import { useState, useEffect, useRef } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { ArrowLeft, Mic, Loader2, X, Plus } from 'lucide-react';
-// import axios from 'axios';
-// import './PredictionPage.css';
-// import { GEMINI_API_KEY } from './config';
-
-// const SpeechPredictionPage = () => {
-//   const navigate = useNavigate();
-//   const [isListening, setIsListening] = useState(false);
-//   const [symptoms, setSymptoms] = useState([]);
-//   const [messages, setMessages] = useState([]);
-//   const [translating, setTranslating] = useState(false);
-//   const [isLoadingPrediction, setIsLoadingPrediction] = useState(false);
-//   const [step, setStep] = useState('input'); // 'input' or 'results'
-//   const [currentLanguage, setCurrentLanguage] = useState('en');
-//   const [showToastMessage, setShowToastMessage] = useState('');
-//   const [toastVisible, setToastVisible] = useState(false);
-  
-//   // Translations object
-//   const translations = {
-//     en: {
-//       analyzeButton: 'Analyze Symptoms',
-//       atLeastOneSymptom: 'Please add at least one symptom',
-//       predictionError: 'Error analyzing symptoms. Please try again.',
-//       // Add other translations as needed
-//     },
-//     es: {
-//       analyzeButton: 'Analizar Síntomas',
-//       atLeastOneSymptom: 'Por favor, añada al menos un síntoma',
-//       predictionError: 'Error al analizar los síntomas. Por favor, inténtelo de nuevo.',
-//       // Add other translations as needed
-//     },
-//     // Add other languages as needed
-//   };
-
-//   // Translation helper function
-//   const getTranslation = (key) => {
-//     return translations[currentLanguage]?.[key] || translations.en[key];
-//   };
-
-//   // Toast helper function
-//   const showToast = (message) => {
-//     setShowToastMessage(message);
-//     setToastVisible(true);
-//     setTimeout(() => {
-//       setToastVisible(false);
-//     }, 3000);
-//   };
-
-//   const handleSubmit = async () => {
-//     if (symptoms.length === 0) {
-//       showToast(getTranslation('atLeastOneSymptom'));
-//       return;
-//     }
-
-//     setStep('results');
-//     setIsLoadingPrediction(true);
-    
-//     const submissionMessage = `I've recorded your symptoms: ${symptoms.join(', ')}. Analyzing your condition...`;
-//     setMessages([...messages, { type: 'system', text: submissionMessage }]);
-
-//     try {
-//       // Prepare the prompt for Gemini
-//       const prompt = `Act as a medical expert. Based on these symptoms: ${symptoms.join(', ')}, predict the most likely disease. Provide:
-// 1. The disease name (format: "Disease: [name]")
-// 2. A brief definition (format: "Definition: [text]")
-// 3. Common medications (format: "Medications: [list]")
-// 4. When to see a doctor (format: "When to see a doctor: [text]")
-// 5. Self-care tips (format: "Self-care: [text]")`;
-
-//       // Call Gemini API
-//       const response = await axios.post(
-//         `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-//         {
-//           contents: [{
-//             parts: [{
-//               text: prompt
-//             }]
-//           }]
-//         },
-//         {
-//           headers: {
-//             'Content-Type': 'application/json'
-//           }
-//         }
-//       );
-
-//       // Parse the response
-//       const responseText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-//       if (!responseText) {
-//         throw new Error('No response text from Gemini API');
-//       }
-
-//       // Extract information from the response
-//       const diseaseMatch = responseText.match(/Disease:\s*(.+)/i);
-//       const definitionMatch = responseText.match(/Definition:\s*(.+)/i);
-//       const medicationsMatch = responseText.match(/Medications:\s*([\s\S]+?)(?=\n\w+:|$)/i);
-//       const seeDoctorMatch = responseText.match(/When to see a doctor:\s*(.+)/i);
-//       const selfCareMatch = responseText.match(/Self-care:\s*(.+)/i);
-
-//       const diseaseName = diseaseMatch ? diseaseMatch[1].trim() : 'Unknown Disease';
-//       const diseaseInfo = {
-//         definition: definitionMatch ? definitionMatch[1].trim() : 'No definition available',
-//         medications: medicationsMatch 
-//           ? medicationsMatch[1].trim().split('\n').map(item => item.trim()).filter(item => item)
-//           : ['No specific medications recommended'],
-//         seeDoctor: seeDoctorMatch ? seeDoctorMatch[1].trim() : 'If symptoms persist or worsen',
-//         selfCare: selfCareMatch ? selfCareMatch[1].trim() : 'Rest and drink plenty of fluids'
-//       };
-
-//       setMessages(prev => [
-//         ...prev,
-//         {
-//           type: 'system',
-//           text: `Based on your symptoms, the most likely condition is: ${diseaseName}`,
-//           disease: diseaseName,
-//           diseaseInfo: diseaseInfo
-//         }
-//       ]);
-      
-//     } catch (error) {
-//       console.error("Prediction error:", error);
-//       let errorMessage = getTranslation('predictionError');
-      
-//       if (error.response) {
-//         errorMessage += ` (Status: ${error.response.status})`;
-//         console.error("API error details:", error.response.data);
-//       }
-      
-//       setMessages((prev) => [...prev, { 
-//         type: 'system', 
-//         text: errorMessage 
-//       }]);
-//     } finally {
-//       setIsLoadingPrediction(false);
-//     }
-//   };
-
-//   // Add a function to handle adding symptoms
-//   const addSymptom = (symptom) => {
-//     if (symptom.trim() && !symptoms.includes(symptom.trim())) {
-//       setSymptoms([...symptoms, symptom.trim()]);
-//     }
-//   };
-
-//   // Add a function to remove a symptom
-//   const removeSymptom = (index) => {
-//     const newSymptoms = [...symptoms];
-//     newSymptoms.splice(index, 1);
-//     setSymptoms(newSymptoms);
-//   };
-
-//   // Add speech recognition functionality
-//   const startListening = () => {
-//     if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-//       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-//       const recognition = new SpeechRecognition();
-//       recognition.lang = currentLanguage === 'en' ? 'en-US' : 'es-ES'; // Adjust for your supported languages
-//       recognition.continuous = false;
-      
-//       recognition.onstart = () => {
-//         setIsListening(true);
-//       };
-      
-//       recognition.onresult = (event) => {
-//         const transcript = event.results[0][0].transcript;
-//         addSymptom(transcript);
-//       };
-      
-//       recognition.onerror = (event) => {
-//         console.error('Speech recognition error', event.error);
-//         setIsListening(false);
-//       };
-      
-//       recognition.onend = () => {
-//         setIsListening(false);
-//       };
-      
-//       recognition.start();
-//     } else {
-//       showToast('Speech recognition is not supported in this browser');
-//     }
-//   };
-
-//   return (
-//     <div className="chat-container">
-//       <div className="chat-header">
-//         <button onClick={() => navigate(-1)} className="back-button">
-//           <ArrowLeft size={20} />
-//         </button>
-//         <h1>{getTranslation('speechPredictionTitle') || 'Symptom Analyzer'}</h1>
-//       </div>
-
-//       {step === 'input' && (
-//         <div className="symptoms-input-section">
-//           <p className="instructions">{getTranslation('addSymptomsInstructions') || 'Add your symptoms below'}</p>
-          
-//           <div className="symptoms-list">
-//             {symptoms.map((symptom, index) => (
-//               <div key={index} className="symptom-tag">
-//                 {symptom}
-//                 <button onClick={() => removeSymptom(index)} className="remove-symptom">
-//                   <X size={14} />
-//                 </button>
-//               </div>
-//             ))}
-//           </div>
-          
-//           <div className="input-actions">
-//             <button 
-//               onClick={startListening} 
-//               className={`mic-button ${isListening ? 'listening' : ''}`}
-//               disabled={isListening}
-//             >
-//               <Mic size={20} />
-//             </button>
-            
-//             <input 
-//               type="text" 
-//               placeholder={getTranslation('typeSymptomPlaceholder') || 'Type a symptom...'}
-//               className="symptom-input"
-//               onKeyPress={(e) => {
-//                 if (e.key === 'Enter' && e.target.value.trim()) {
-//                   addSymptom(e.target.value);
-//                   e.target.value = '';
-//                 }
-//               }}
-//             />
-            
-//             <button 
-//               onClick={() => {
-//                 const input = document.querySelector('.symptom-input');
-//                 if (input.value.trim()) {
-//                   addSymptom(input.value);
-//                   input.value = '';
-//                 }
-//               }}
-//               className="add-symptom-button"
-//             >
-//               <Plus size={20} />
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {step === 'results' && (
-//         <div className="chat-messages">
-//           {messages.map((message, index) => (
-//             <div key={index} className={`message ${message.type}`}>
-//               <div className="message-content">
-//                 {message.text}
-                
-//                 {message.disease && (
-//                   <div className="disease-info">
-//                     <h3>{message.disease}</h3>
-//                     <p><strong>Definition:</strong> {message.diseaseInfo.definition}</p>
-                    
-//                     <p><strong>Medications:</strong></p>
-//                     <ul>
-//                       {message.diseaseInfo.medications.map((med, i) => (
-//                         <li key={i}>{med}</li>
-//                       ))}
-//                     </ul>
-                    
-//                     <p><strong>When to see a doctor:</strong> {message.diseaseInfo.seeDoctor}</p>
-//                     <p><strong>Self-care:</strong> {message.diseaseInfo.selfCare}</p>
-//                   </div>
-//                 )}
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-
-//       {toastVisible && (
-//         <div className="toast-message">
-//           {showToastMessage}
-//         </div>
-//       )}
-
-//       <button
-//         onClick={handleSubmit}
-//         className="submit-button"
-//         disabled={symptoms.length === 0 || isListening || translating || isLoadingPrediction}
-//       >
-//         {isLoadingPrediction ? (
-//           <Loader2 className="spin" size={18} />
-//         ) : (
-//           getTranslation('analyzeButton')
-//         )}
-//       </button>
-//     </div>
-//   );
-// };
-
-// export default SpeechPredictionPage;
-
-
-
-
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mic, Loader2, X, Plus } from 'lucide-react';
 import axios from 'axios';
 import './PredictionPage.css'; // Reusing the same CSS
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
+
 
 const SpeechPredictionPage = () => {
   const [step, setStep] = useState('language-selection');
@@ -321,6 +24,13 @@ const SpeechPredictionPage = () => {
   const [notificationText, setNotificationText] = useState('');
   const [translating, setTranslating] = useState(false);
   const [showManualInput, setShowManualInput] = useState(false);
+  const [diseaseInfo, setDiseaseInfo] = useState('');
+  const [loadingInfo, setLoadingInfo] = useState(false);
+
+  const createMarkup = (html) => {
+    return { __html: DOMPurify.sanitize(html, { ADD_ATTR: ['style'] }) };
+  };
+
 
   // Language options with their codes for speech recognition
   const languages = [
@@ -555,6 +265,7 @@ const SpeechPredictionPage = () => {
   }, [selectedLanguage]); // Reinitialize when language changes
 
   const handleLanguageSelect = async () => {
+    localStorage.setItem('selectedLanguage', selectedLanguage);
     setStep('symptoms');
     const greeting = getTranslation('greeting', userInfo.name);
 
@@ -705,7 +416,7 @@ const SpeechPredictionPage = () => {
       return;
     }
 
-    setStep('results');
+    // setStep('results');
     const submissionMessage = `I've recorded your symptoms: ${symptoms.join(', ')}. Analyzing your condition...`;
     setMessages([...messages, { type: 'system', text: submissionMessage }]);
 
@@ -726,6 +437,19 @@ const SpeechPredictionPage = () => {
     }
   };
 
+  const fetchDiseaseInfo = async (disease) => {
+    setLoadingInfo(true);
+    setDiseaseInfo('');
+    try {
+      const response = await axios.post('http://localhost:5000/get-disease-info', { disease });
+      setDiseaseInfo(response.data.info);
+    } catch (error) {
+      showToast('Failed to fetch disease info');
+      console.error(error);
+    } finally {
+      setLoadingInfo(false);
+    }
+  };
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -781,7 +505,7 @@ const SpeechPredictionPage = () => {
                     {message.text}
                     {message.disease && (
                       <button
-                        onClick={() => navigate(`/disease-info/${encodeURIComponent(message.disease)}`)}
+                        onClick={() => fetchDiseaseInfo(message.disease)}
                         className="get-info-button"
                       >
                         Get More Info
@@ -806,9 +530,20 @@ const SpeechPredictionPage = () => {
                   </div>
                 </div>
               ))}
+              {loadingInfo && (
+                <div className="spinner-container">
+                  <div className="loader"></div>
+                  <p>Fetching disease information...</p>
+                </div>
+              )}
+
+              {diseaseInfo && !loadingInfo && (
+                <div className="disease-info-display" dangerouslySetInnerHTML={createMarkup(diseaseInfo)} />
+              )}
             </>
           )}
         </div>
+        
 
         {step === 'symptoms' && (
           <div className="chat-input">

@@ -6,7 +6,6 @@ import Home from './components/home/Home';
 import LanguageContext from './LanguageContext';
 import PredictionPage from './components/predictionPage/PredictionPage'
 import SpeechPredictionPage from './components/speechPredictionPage/SpeechPredictionPage';
-import DiseaseInfoPage from './components/diseaseInfoPage/DiseaseInfoPage';
 function App() {
   const [language, setLanguage] = useState('English');
   const router = createBrowserRouter([
@@ -25,10 +24,6 @@ function App() {
         {
           path: "/predict-speech",
           element:<SpeechPredictionPage/>
-        },
-        {
-          path:"/disease-info/:diseaseName",
-          element:<DiseaseInfoPage />
         }
       ],
     },
