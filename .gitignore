@@ -1,0 +1,6 @@
+# Ignore config file
+# client/src/components/config.js
+
+# Ignore pickle files
+model/*.pkl
+model/final_data_set.csv
