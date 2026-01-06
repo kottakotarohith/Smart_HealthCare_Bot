@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import SymptomInputArea from '../symptomInputArea/SymptomInputArea';
 import './PredictionPage.css';
 import { predict_path } from '../config';
-import { marked } from 'marked';
+// import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 
